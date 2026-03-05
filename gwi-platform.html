@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>GWI Platform</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f7f8fa;color:#1a1a2e;display:flex;height:100vh;overflow:hidden;font-size:13px}
+/* sidebar */
+.sb{width:252px;min-width:252px;background:#fff;display:flex;flex-direction:column;height:100vh;border-right:1px solid #ebebeb;overflow-y:auto;flex-shrink:0}
+.sb::-webkit-scrollbar{width:0}
+.logo-row{display:flex;align-items:center;justify-content:space-between;padding:20px 18px 14px}
+.logo{font-size:26px;font-weight:900;color:#111;letter-spacing:-1px;cursor:pointer}
+.logo span{color:#e91e8c}
+.proj-wrap{padding:0 14px 14px}
+.proj-lbl{font-size:10px;font-weight:700;color:#bbb;letter-spacing:1px;text-transform:uppercase;margin-bottom:7px}
+.proj-sel{width:100%;border:1.5px solid #e8e8e8;border-radius:9px;padding:9px 13px;font-size:13px;color:#222;font-weight:500;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:space-between}
+.nav{flex:1;padding:2px 0}
+.grp-hd{display:flex;align-items:center;justify-content:space-between;padding:10px 18px 5px;cursor:pointer}
+.grp-lbl{font-size:10px;font-weight:700;color:#bbb;letter-spacing:1px;text-transform:uppercase}
+.ni{display:flex;align-items:center;gap:12px;padding:9px 14px;margin:1px 7px;border-radius:9px;cursor:pointer;color:#666;font-size:13px;font-weight:500;transition:all 0.1s}
+.ni:hover{background:#f7f8fa;color:#222}
+.ni.active{background:#fce4f0;color:#e91e8c}
+.ni.active svg{color:#e91e8c}
+.ni svg{width:17px;height:17px;color:#bbb;flex-shrink:0}
+.lab-ni{padding:7px 10px;border-radius:8px;cursor:pointer;color:#777;font-size:12.5px;font-weight:500;transition:all 0.1s;display:flex;align-items:center}
+.lab-ni:hover{background:#f7f8fa;color:#333}
+.lab-ni.active{background:#fce4f0;color:#e91e8c;font-weight:700}
+.sb-footer{padding:10px 14px 14px;border-top:1px solid #f0f0f0;margin-top:auto}
+.usr-r{display:flex;align-items:center;gap:9px;padding:9px 3px;cursor:pointer}
+.av{width:34px;height:34px;border-radius:50%;background:#e91e8c;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;flex-shrink:0}
+/* main */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.topbar{background:#fff;border-bottom:1px solid #ebebeb;padding:0 24px;height:56px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.pg-title{font-size:17px;font-weight:800;color:#111}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:9px}
+.btn{padding:7px 15px;border-radius:8px;font-size:12.5px;font-weight:600;cursor:pointer;border:1.5px solid #e0e0e0;background:#fff;color:#444;white-space:nowrap;transition:all 0.12s}
+.btn:hover{border-color:#ccc;background:#f7f8fa}
+.btn.pk{background:#e91e8c;color:#fff;border-color:#e91e8c}
+.btn.pk:hover{background:#d01879}
+/* pages */
+.page{display:none;flex:1;overflow:hidden;flex-direction:column}
+.page.active{display:flex}
+.scroll{flex:1;overflow-y:auto;padding:22px 26px}
+.scroll::-webkit-scrollbar{width:4px}
+.scroll::-webkit-scrollbar-thumb{background:#e0e0e0;border-radius:20px}
+/* shared */
+.card{background:#fff;border-radius:12px;border:1px solid #ebebeb;padding:20px}
+.card-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.card-title{font-size:13.5px;font-weight:700;color:#111}
+.card-sub{font-size:11.5px;color:#bbb;margin-top:2px}
+.badge{display:inline-flex;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:700}
+.bg{background:#e3faf2;color:#1abc9c}
+.bo{background:#fff4e0;color:#f7b731}
+.br{background:#ffe8ec;color:#e91e8c}
+.stat{background:#fff;border-radius:11px;padding:16px 18px;border:1px solid #ebebeb}
+.stat-lbl{font-size:11px;font-weight:700;color:#bbb;text-transform:uppercase;letter-spacing:0.7px;margin-bottom:8px}
+.stat-val{font-size:22px;font-weight:900;color:#111}
+.stat-ch{margin-top:6px;font-size:11.5px;font-weight:600;color:#1abc9c}
+.stat-ch.dn{color:#e91e8c}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:18px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.grid21{display:grid;grid-template-columns:1.6fr 1fr;gap:14px;margin-bottom:14px}
+.mb{margin-bottom:14px}
+.hbars{display:flex;flex-direction:column;gap:10px}
+.hbar{display:flex;align-items:center;gap:9px}
+.hbar-lbl{font-size:12px;color:#555;width:88px;text-align:right;flex-shrink:0}
+.hbar-track{flex:1;background:#f2f3f8;border-radius:20px;height:8px;overflow:hidden}
+.hbar-fill{height:100%;border-radius:20px;transition:width 0.9s cubic-bezier(.4,0,.2,1)}
+.hbar-pct{font-size:11.5px;font-weight:700;color:#888;width:32px}
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{font-size:10.5px;font-weight:700;color:#bbb;text-transform:uppercase;letter-spacing:0.7px;padding:0 10px 9px;text-align:left;border-bottom:1.5px solid #f2f3f8}
+.tbl td{padding:11px 10px;font-size:13px;color:#333;border-bottom:1px solid #f7f8fa;vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:#fdfafe}
+.spark{width:100%;height:80px}
+.lab-tab{padding:11px 18px;font-size:13px;font-weight:700;cursor:pointer;color:#aaa;border-bottom:2.5px solid transparent;margin-bottom:-1.5px;white-space:nowrap;transition:all 0.12s}
+.inp{width:100%;border:1.5px solid #e8e8e8;border-radius:8px;padding:9px 13px;font-size:13px;outline:none;font-family:inherit;box-sizing:border-box}
+.inp:focus{border-color:#e91e8c}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:1000;align-items:center;justify-content:center}
+.modal-box{background:#fff;border-radius:16px;padding:26px;box-shadow:0 20px 60px rgba(0,0,0,0.2);overflow-y:auto}
+.donut-wrap{display:flex;align-items:center;gap:16px}
+.leg{display:flex;flex-direction:column;gap:8px;flex:1}
+.leg-item{display:flex;align-items:center;gap:7px;font-size:12px;color:#666}
+.leg-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.leg-val{margin-left:auto;font-weight:700;color:#222;font-size:12.5px}
+.word-cloud{display:flex;flex-wrap:wrap;gap:7px;align-items:center;padding:4px 0}
+.acard{padding:11px;border-radius:9px;cursor:pointer;border:1.5px solid transparent;margin-bottom:3px;transition:all 0.12s}
+.acard:hover{background:#fafbff;border-color:#e8e8f0}
+.acard.sel{background:#fce4f0;border-color:#e91e8c}
+.sbox{display:flex;align-items:center;gap:7px;background:#f7f8fa;border:1.5px solid #ebebeb;border-radius:8px;padding:6px 11px}
+.sbox input{border:none;background:transparent;font-size:13px;color:#333;outline:none;width:100%}
+.chkbox{width:16px;height:16px;border-radius:4px;border:1.5px solid #ddd;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all 0.12s}
+.chkbox.on{background:#e91e8c;border-color:#e91e8c}
+.chkbox.on svg{display:block}
+.chkbox svg{display:none;width:9px;height:9px;stroke:#fff;stroke-width:3;fill:none}
+.ct-select{border:1.5px solid #e8e8e8;border-radius:8px;padding:6px 12px;font-size:12.5px;color:#333;background:#fff;cursor:pointer;outline:none}
+.ctb{padding:6px 13px;border-radius:8px;border:1.5px solid #e8e8e8;background:#fff;font-size:12px;font-weight:600;color:#888;cursor:pointer;transition:all 0.12s}
+.ctb.active{background:#e91e8c;color:#fff;border-color:#e91e8c}
+.chart-svg{width:100%;overflow:visible}
+.axis-label{font-size:10.5px;fill:#bbb;font-family:-apple-system,sans-serif}
+.grid-line{stroke:#f2f3f8;stroke-width:1}
+.bar-rect{cursor:pointer;transition:opacity 0.15s}
+.bar-rect:hover{opacity:0.8}
+.tooltip{position:absolute;background:#1a1a2e;color:#fff;font-size:12px;font-weight:600;padding:6px 11px;border-radius:8px;pointer-events:none;display:none;z-index:100;white-space:nowrap}
+.exp-cat-hd{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;cursor:pointer;color:#555;font-size:13px;font-weight:600}
+.exp-cat-hd:hover{background:#f7f8fa}
+.exp-cat-items{padding:2px 0 2px 28px;display:none}
+.exp-cat-items.open{display:block}
+.exp-item{padding:7px 10px;border-radius:7px;cursor:pointer;font-size:12.5px;color:#777;font-weight:500;display:flex;align-items:center;gap:7px}
+.exp-item:hover{background:#f7f8fa;color:#333}
+.exp-item.sel{background:#fce4f0;color:#e91e8c;font-weight:600}
+.exp-item-dot{width:6px;height:6px;border-radius:50%;background:#e0e0e0;flex-shrink:0}
+.exp-item.sel .exp-item-dot{background:#e91e8c}
+.q-card{background:#fff;border-radius:11px;border:1px solid #ebebeb;margin-bottom:12px;overflow:hidden}
+.q-card-hd{padding:14px 18px;border-bottom:1px solid #f5f5f5;display:flex;align-items:center;justify-content:space-between}
+.q-text{font-size:13px;font-weight:700;color:#111}
+.q-meta{font-size:11px;color:#bbb}
+.q-body{padding:16px 18px}
+.q-opt{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.q-opt-lbl{font-size:12.5px;color:#444;width:180px;flex-shrink:0}
+.q-bar-track{flex:1;background:#f2f3f8;border-radius:20px;height:9px;overflow:hidden}
+.q-bar-fill{height:100%;border-radius:20deg;background:linear-gradient(90deg,#e91e8c,#a855f7)}
+.q-pct{font-size:12px;font-weight:700;color:#555;width:38px;text-align:right}
+.q-idx{font-size:11.5px;font-weight:700;width:32px;text-align:right}
+.idx-hi{color:#e91e8c}.idx-md{color:#6c63ff}.idx-lo{color:#aaa}
+</style>
+</head>
+<body>
+
+<!-- ═══ SIDEBAR ═══ -->
+<aside class="sb">
+  <div class="logo-row">
+    <div class="logo" onclick="nav('home')">GWI<span>.</span></div>
+  </div>
+  <div class="proj-wrap">
+    <div class="proj-lbl">Project</div>
+    <div class="proj-sel"><span>All projects</span><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+  </div>
+  <div class="nav">
+    <div class="grp-hd"><span class="grp-lbl">Discover</span></div>
+    <div class="ni active" id="ni-home" onclick="nav('home')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg>Home</div>
+    <div class="ni" id="ni-explorer" onclick="nav('explorer')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg>Data Explorer</div>
+    <div class="ni" id="ni-audiences" onclick="nav('audiences')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>Audiences</div>
+    <div class="ni" id="ni-agents" onclick="nav('agents')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>Agents</div>
+    <div class="grp-hd"><span class="grp-lbl">Analyze</span></div>
+    <div class="ni" id="ni-charts" onclick="nav('charts')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Charts</div>
+    <div class="ni" id="ni-dashboards" onclick="nav('dashboards')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/></svg>Dashboards</div>
+    <div class="grp-hd"><span class="grp-lbl">Intelligence</span></div>
+    <div class="ni" id="ni-journey" onclick="nav('journey')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>Insights Journey <span style="margin-left:auto;background:linear-gradient(90deg,#e91e8c,#6c63ff);color:#fff;font-size:9px;padding:1px 7px;border-radius:20px;font-weight:700">NEW</span></div>
+    <div class="ni" id="ni-lifecycle" onclick="nav('lifecycle')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>Agentic Lifecycle</div>
+    <div class="grp-hd"><span class="grp-lbl">Research</span></div>
+    <div class="ni" id="ni-lab" onclick="toggleLabDd(this)">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2v-4M9 21H5a2 2 0 01-2-2v-4m0 0h18"/></svg>
+      Research Lab
+      <span style="margin-left:auto;display:flex;align-items:center;gap:5px">
+        <span style="background:#e91e8c;color:#fff;font-size:9px;padding:1px 6px;border-radius:20px;font-weight:700">NEW</span>
+        <svg id="lab-chev" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="color:#ccc;transition:transform 0.2s"><polyline points="6 9 12 15 18 9"/></svg>
+      </span>
+    </div>
+    <div id="lab-dd" style="display:none;margin:0 7px 4px 28px;border-left:2px solid #f0f0f0;padding-left:6px">
+      <div class="lab-ni" onclick="navLab('dashboard')">Dashboard</div>
+      <div class="lab-ni" onclick="navLab('surveys')">Surveys</div>
+      <div class="lab-ni" onclick="navLab('pipeline')">Delivery Pipeline</div>
+      <div class="lab-ni" onclick="navLab('fieldwork')">Fieldwork</div>
+      <div class="lab-ni" onclick="navLab('weighting')">Weighting</div>
+      <div class="lab-ni" onclick="navLab('qa')">QA &amp; Translations</div>
+      <div class="lab-ni" onclick="navLab('providers')">Panel Providers</div>
+      <div class="lab-ni" onclick="navLab('users')">Users</div>
+      <div class="lab-ni" onclick="navLab('errors')">Error Log <span style="margin-left:auto;background:#ff5c7c;color:#fff;font-size:9px;padding:1px 5px;border-radius:20px;font-weight:700">3</span></div>
+    </div>
+    <div class="ni" id="ni-rld" onclick="nav('rld')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>RLD Delivery <span style="margin-left:auto;background:#f7b731;color:#fff;font-size:9px;padding:1px 6px;border-radius:20px;font-weight:700">AGENT</span></div>
+    <div class="grp-hd"><span class="grp-lbl">Deliver</span></div>
+    <div class="ni" onclick="nav('home')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Reports</div>
+    <div class="ni" onclick="nav('home')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>Canvas</div>
+    <div class="grp-hd"><span class="grp-lbl">Workspace</span></div>
+    <div class="ni" onclick="nav('home')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="14" rx="1"/></svg>Projects</div>
+    <div class="ni" onclick="nav('home')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Teams</div>
+  </div>
+  <div class="sb-footer">
+    <div class="usr-r"><div class="av">D</div><div><div style="color:#111;font-size:13px;font-weight:700">Demo User</div><div style="color:#bbb;font-size:11px">GWI Demo Workspace</div></div></div>
+  </div>
+</aside>
+
+<!-- ═══ MAIN ═══ -->
+<div class="main">
+  <div class="topbar">
+    <div class="pg-title" id="pg-title">Home</div>
+    <div class="tb-right" id="tb-actions"><button class="btn pk" onclick="nav('audiences')">+ New Audience</button></div>
+  </div>
+
+  <!-- HOME -->
+  <div class="page active" id="page-home">
+    <div class="scroll" id="home-scroll">
+      <!-- Hero -->
+      <div style="background:#0e0e1a;border-radius:16px;padding:32px 36px;margin-bottom:24px;position:relative;overflow:hidden">
+        <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 70% 50%,rgba(233,30,140,0.12) 0%,transparent 65%)"></div>
+        <div style="position:relative;display:flex;align-items:center;justify-content:space-between;gap:32px">
+          <div style="flex:1">
+            <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.35);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px">GWI Platform</div>
+            <div style="font-size:26px;font-weight:900;color:#fff;line-height:1.2;margin-bottom:10px">Human Insights.<br><span style="color:#e91e8c">Enhanced with AI.</span></div>
+            <div style="font-size:13px;color:rgba(255,255,255,0.5);max-width:420px;line-height:1.7;margin-bottom:18px">From client brief to delivered insight — one connected platform powered by seven AI agents.</div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <button onclick="nav('journey')" style="padding:9px 22px;border-radius:9px;background:#e91e8c;color:#fff;border:none;font-weight:700;font-size:13px;cursor:pointer">Start Insights Journey</button>
+              <button onclick="nav('explorer')" style="padding:9px 22px;border-radius:9px;background:rgba(255,255,255,0.1);color:#fff;border:1.5px solid rgba(255,255,255,0.2);font-weight:700;font-size:13px;cursor:pointer">Explore Data</button>
+              <button onclick="nav('lifecycle')" style="padding:9px 22px;border-radius:9px;background:rgba(255,255,255,0.1);color:#fff;border:1.5px solid rgba(255,255,255,0.2);font-weight:700;font-size:13px;cursor:pointer">Agentic Lifecycle</button>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;flex-shrink:0">
+            <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:14px 16px;text-align:center"><div style="font-size:20px;font-weight:900;color:#e91e8c">2.4B</div><div style="font-size:10px;color:rgba(255,255,255,0.4);margin-top:2px">Global Reach</div></div>
+            <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:14px 16px;text-align:center"><div style="font-size:20px;font-weight:900;color:#fff">50+</div><div style="font-size:10px;color:rgba(255,255,255,0.4);margin-top:2px">Markets</div></div>
+            <div style="background:rgba(108,99,255,0.2);border:1px solid rgba(108,99,255,0.3);border-radius:12px;padding:14px 16px;text-align:center"><div style="font-size:20px;font-weight:900;color:#a78bfa">250K+</div><div style="font-size:10px;color:rgba(255,255,255,0.4);margin-top:2px">Data Points</div></div>
+            <div style="background:rgba(233,30,140,0.2);border:1px solid rgba(233,30,140,0.3);border-radius:12px;padding:14px 16px;text-align:center"><div style="font-size:20px;font-weight:900;color:#ff80c0">7</div><div style="font-size:10px;color:rgba(255,255,255,0.4);margin-top:2px">AI Agents</div></div>
+          </div>
+        </div>
+      </div>
+      <!-- Persona selector -->
+      <div style="margin-bottom:20px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div style="font-size:13.5px;font-weight:800;color:#111">I am a...</div>
+          <div style="font-size:12px;color:#aaa">Select your role to personalise this view</div>
+        </div>
+        <div id="persona-chips" style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px"></div>
+      </div>
+      <div id="persona-content">
+        <!-- default stats -->
+        <div class="stats-row">
+          <div class="stat"><div class="stat-lbl">Total Reach</div><div class="stat-val">2.4B</div><div class="stat-ch">8.3% this quarter</div></div>
+          <div class="stat"><div class="stat-lbl">Saved Audiences</div><div class="stat-val">12</div><div class="stat-ch">3 new this month</div></div>
+          <div class="stat"><div class="stat-lbl">Live Surveys</div><div class="stat-val">4</div><div class="stat-ch">2 launching this week</div></div>
+          <div class="stat"><div class="stat-lbl">Active Projects</div><div class="stat-val">14</div><div class="stat-ch">5 in fieldwork</div></div>
+        </div>
+        <div class="grid21">
+          <div class="card">
+            <div class="card-hd"><div><div class="card-title">Audience Reach Trend</div><div class="card-sub">Monthly</div></div></div>
+            <svg class="spark" viewBox="0 0 480 80" preserveAspectRatio="none">
+              <defs><linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e91e8c" stop-opacity="0.15"/><stop offset="100%" stop-color="#e91e8c" stop-opacity="0"/></linearGradient></defs>
+              <path d="M0,62 C50,57 80,47 120,41 C160,35 180,52 230,35 C280,19 310,31 360,19 C400,9 440,15 480,5" fill="none" stroke="#e91e8c" stroke-width="2.5"/>
+              <path d="M0,62 C50,57 80,47 120,41 C160,35 180,52 230,35 C280,19 310,31 360,19 C400,9 440,15 480,5 L480,80 L0,80 Z" fill="url(#g1)"/>
+            </svg>
+          </div>
+          <div class="card">
+            <div class="card-hd"><div class="card-title">Gender Split</div></div>
+            <div class="donut-wrap">
+              <svg width="90" height="90" viewBox="0 0 90 90"><circle cx="45" cy="45" r="34" fill="none" stroke="#f2f3f8" stroke-width="13"/><circle cx="45" cy="45" r="34" fill="none" stroke="#e91e8c" stroke-width="13" stroke-dasharray="128 85" stroke-dashoffset="0" transform="rotate(-90 45 45)"/><circle cx="45" cy="45" r="34" fill="none" stroke="#6c63ff" stroke-width="13" stroke-dasharray="85 128" stroke-dashoffset="-128" transform="rotate(-90 45 45)"/><text x="45" y="49" text-anchor="middle" font-size="12" font-weight="800" fill="#111">60/40</text></svg>
+              <div class="leg"><div class="leg-item"><div class="leg-dot" style="background:#e91e8c"></div>Female<div class="leg-val">60%</div></div><div class="leg-item"><div class="leg-dot" style="background:#6c63ff"></div>Male<div class="leg-val">40%</div></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="grid2">
+          <div class="card"><div class="card-hd"><div class="card-title">Top Interests</div></div><div class="hbars" id="h-interests"></div></div>
+          <div class="card"><div class="card-hd"><div class="card-title">Age Groups</div></div><div class="hbars" id="h-ages"></div></div>
+        </div>
+        <div class="card mb"><div class="card-hd"><div class="card-title">Saved Audiences</div><button class="btn" onclick="nav('audiences')">View All</button></div><table class="tbl"><thead><tr><th>Name</th><th>Reach</th><th>Region</th><th>Status</th><th>Index</th></tr></thead><tbody id="home-tbl"></tbody></table></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AUDIENCES -->
+  <div class="page" id="page-audiences">
+    <div style="flex:1;display:flex;overflow:hidden">
+      <div style="width:280px;min-width:280px;background:#fff;border-right:1px solid #ebebeb;display:flex;flex-direction:column">
+        <div style="padding:14px;border-bottom:1px solid #f0f0f0"><h3 style="font-size:12.5px;font-weight:700;color:#111;margin-bottom:9px">My Audiences</h3><div class="sbox"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input placeholder="Search..." oninput="filterAuds(this.value)"/></div></div>
+        <div style="flex:1;overflow-y:auto;padding:7px" id="aud-list-c"></div>
+        <button onclick="newAud()" style="margin:10px;padding:9px;border-radius:9px;border:1.5px dashed #e0e0e0;background:transparent;color:#bbb;font-size:12.5px;font-weight:600;cursor:pointer">+ New Audience</button>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;background:#f7f8fa">
+        <div style="background:#fff;border-bottom:1px solid #ebebeb;padding:12px 22px;display:flex;align-items:center;gap:12px;flex-shrink:0">
+          <input id="aud-name" style="font-size:15px;font-weight:800;color:#111;border:none;outline:none;background:transparent;flex:1" value="Tech-Savvy Millennials"/>
+          <div style="background:#fce4f0;color:#e91e8c;font-size:12px;font-weight:700;padding:5px 13px;border-radius:20px;white-space:nowrap">👥 <span id="rp">180M reach</span></div>
+          <button class="btn pk">Save Audience</button>
+        </div>
+        <div style="flex:1;overflow-y:auto;padding:16px 20px;display:flex;gap:14px">
+          <div style="flex:1;display:flex;flex-direction:column;gap:10px">
+            <div class="card">
+              <div style="font-size:13px;font-weight:700;color:#111;margin-bottom:10px">Demographics</div>
+              <div style="font-size:10.5px;font-weight:700;color:#bbb;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:7px">Age</div>
+              <div style="display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:8px;background:#f7f8fa;margin-bottom:6px"><div class="chkbox on" onclick="this.classList.toggle('on');updateReach()"><svg viewBox="0 0 12 10"><polyline points="1,5 4,9 11,1"/></svg></div><div style="flex:1;font-size:12.5px;color:#333">25–34</div><div style="font-size:11.5px;font-weight:700;color:#aaa">31%</div></div>
+              <div style="display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:8px;background:#f7f8fa;margin-bottom:6px"><div class="chkbox on" onclick="this.classList.toggle('on');updateReach()"><svg viewBox="0 0 12 10"><polyline points="1,5 4,9 11,1"/></svg></div><div style="flex:1;font-size:12.5px;color:#333">35–44</div><div style="font-size:11.5px;font-weight:700;color:#aaa">25%</div></div>
+              <div style="display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:8px;background:#f7f8fa"><div class="chkbox" onclick="this.classList.toggle('on');updateReach()"><svg viewBox="0 0 12 10"><polyline points="1,5 4,9 11,1"/></svg></div><div style="flex:1;font-size:12.5px;color:#333">16–24</div><div style="font-size:11.5px;font-weight:700;color:#aaa">22%</div></div>
+            </div>
+            <div class="card">
+              <div style="font-size:13px;font-weight:700;color:#111;margin-bottom:10px">Interests</div>
+              <div style="display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:8px;background:#f7f8fa;margin-bottom:6px"><div class="chkbox on" onclick="this.classList.toggle('on');updateReach()"><svg viewBox="0 0 12 10"><polyline points="1,5 4,9 11,1"/></svg></div><div style="flex:1;font-size:12.5px;color:#333">Technology</div><div style="font-size:11.5px;font-weight:700;color:#aaa">72%</div></div>
+              <div style="display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:8px;background:#f7f8fa"><div class="chkbox on" onclick="this.classList.toggle('on');updateReach()"><svg viewBox="0 0 12 10"><polyline points="1,5 4,9 11,1"/></svg></div><div style="flex:1;font-size:12.5px;color:#333">Gaming</div><div style="font-size:11.5px;font-weight:700;color:#aaa">55%</div></div>
+            </div>
+          </div>
+          <div style="width:230px;display:flex;flex-direction:column;gap:10px">
+            <div class="card">
+              <div style="font-size:13px;font-weight:700;color:#111;margin-bottom:10px">Audience Size</div>
+              <div style="text-align:center;padding:8px 0 12px"><div style="font-size:28px;font-weight:900;color:#e91e8c" id="reach-num">180M</div><div style="font-size:11px;color:#aaa;margin-top:4px">estimated global reach</div></div>
+              <div style="background:#f2f3f8;border-radius:20px;height:7px;overflow:hidden;margin-bottom:12px"><div id="reach-bar" style="height:100%;border-radius:20px;background:linear-gradient(90deg,#e91e8c,#a855f7);width:62%;transition:width 0.6s"></div></div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:7px"><span style="font-size:11.5px;color:#999">Confidence</span><span style="font-size:12px;font-weight:700;color:#1abc9c">High</span></div>
+            </div>
+            <div class="card">
+              <div style="font-size:13px;font-weight:700;color:#111;margin-bottom:8px">Index Score</div>
+              <div style="text-align:center;padding:6px 0 8px"><div style="font-size:32px;font-weight:900;color:#6c63ff">142</div><div style="font-size:11px;color:#bbb;margin-top:4px">vs. internet avg (100)</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHARTS -->
+  <div class="page" id="page-charts">
+    <div class="scroll">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap">
+        <select class="ct-select"><option>Tech-Savvy Millennials</option><option>Gen Z Gamers</option></select>
+        <select class="ct-select"><option>Top Interests</option><option>Social Media</option><option>Device Usage</option></select>
+        <div style="display:flex;gap:5px;margin-left:auto">
+          <button class="ctb active" onclick="setChart('bar',this)">Bar</button>
+          <button class="ctb" onclick="setChart('donut',this)">Donut</button>
+          <button class="ctb" onclick="setChart('line',this)">Line</button>
+        </div>
+        <button class="btn pk">Export</button>
+      </div>
+      <div class="card mb" id="chart-bar" style="position:relative"><div class="card-hd"><div class="card-title">Top Interests</div></div><div id="bar-wrap"></div><div class="tooltip" id="tooltip"></div></div>
+      <div class="card mb" id="chart-donut" style="display:none"><div class="card-hd"><div class="card-title">Interest Distribution</div></div><div id="donut-wrap" style="display:flex;align-items:center;gap:30px;padding:10px 0"></div></div>
+      <div class="card mb" id="chart-line" style="display:none"><div class="card-hd"><div class="card-title">Interest Trends</div></div><div id="line-wrap"></div></div>
+      <div class="grid2">
+        <div class="card"><div class="card-hd"><div class="card-title">Social Platforms</div></div><div class="hbars" id="c-social"></div></div>
+        <div class="card"><div class="card-hd"><div class="card-title">Device Usage</div></div><div class="hbars" id="c-device"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXPLORER -->
+  <div class="page" id="page-explorer">
+    <div style="flex:1;display:flex;overflow:hidden">
+      <div style="width:265px;min-width:265px;background:#fff;border-right:1px solid #ebebeb;display:flex;flex-direction:column">
+        <div style="padding:14px;border-bottom:1px solid #f0f0f0"><h3 style="font-size:12.5px;font-weight:700;color:#111;margin-bottom:9px">Question Library</h3><div class="sbox"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input placeholder="Search questions..."/></div></div>
+        <div style="flex:1;overflow-y:auto;padding:8px" id="exp-cats"></div>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;background:#f7f8fa">
+        <div style="background:#fff;border-bottom:1px solid #ebebeb;padding:11px 20px;display:flex;align-items:center;gap:10px;flex-shrink:0">
+          <div id="exp-bc" style="font-size:12.5px;color:#aaa;font-weight:500">Interests &amp; Passions › <strong style="color:#e91e8c">Technology</strong></div>
+          <div style="margin-left:auto;display:flex;gap:8px"><select class="ct-select"><option>Tech-Savvy Millennials</option><option>All internet users</option></select><button class="btn pk">Add to Chart</button></div>
+        </div>
+        <div style="flex:1;overflow-y:auto;padding:18px 22px" id="exp-content"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DASHBOARDS -->
+  <div class="page" id="page-dashboards">
+    <div class="scroll">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px"><div style="font-size:15px;font-weight:800;color:#111">Audience Overview Dashboard</div><div style="display:flex;gap:8px"><button class="btn">Add Widget</button><button class="btn pk">Save</button></div></div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px">
+        <div class="card"><div class="card-hd"><div class="card-title">Total Reach</div></div><div style="text-align:center;padding:12px 0"><div style="font-size:26px;font-weight:900;color:#111">2.4B</div><div style="font-size:12px;font-weight:700;color:#1abc9c;margin-top:5px">8.3% this quarter</div></div></div>
+        <div class="card"><div class="card-hd"><div class="card-title">Index Score</div></div><div style="text-align:center;padding:12px 0"><div style="font-size:26px;font-weight:900;color:#6c63ff">142</div><div style="font-size:12px;font-weight:700;color:#1abc9c;margin-top:5px">12 pts vs last qtr</div></div></div>
+        <div class="card"><div class="card-hd"><div class="card-title">Engagement</div></div><div style="text-align:center;padding:12px 0"><div style="font-size:26px;font-weight:900;color:#111">67%</div><div style="font-size:12px;font-weight:700;color:#e91e8c;margin-top:5px">2.1% vs last qtr</div></div></div>
+      </div>
+      <div class="grid2">
+        <div class="card"><div class="card-hd"><div class="card-title">Top Interests</div></div><div class="hbars" id="d-int"></div></div>
+        <div class="card"><div class="card-hd"><div class="card-title">Age Breakdown</div></div><div class="hbars" id="d-age"></div></div>
+      </div>
+      <div class="card mb"><div class="card-hd"><div class="card-title">Trending Keywords</div></div><div class="word-cloud" id="wcloud"></div></div>
+    </div>
+  </div>
+
+  <!-- AGENTS -->
+  <div class="page" id="page-agents">
+    <div class="scroll">
+      <div style="background:#0e0e1a;border-radius:16px;padding:28px 32px;margin-bottom:18px"><div style="font-size:20px;font-weight:900;color:#e91e8c;margin-bottom:6px">AI Agents and Tools</div><div style="font-size:13px;color:rgba(255,255,255,0.5);max-width:500px;line-height:1.6">Powerful agents that automate analysis, generate narratives, build personas, and push insights.</div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px" id="agent-cards"></div>
+    </div>
+  </div>
+
+  <!-- RESEARCH LAB -->
+  <div class="page" id="page-lab">
+    <div style="background:#fff;border-bottom:1.5px solid #ebebeb;padding:0 24px;display:flex;align-items:center;gap:0;flex-shrink:0;overflow-x:auto">
+      <div class="lab-tab" id="lt-dashboard" onclick="switchLabTab('dashboard',this)" style="color:#e91e8c;border-bottom-color:#e91e8c">Dashboard</div>
+      <div class="lab-tab" id="lt-surveys"   onclick="switchLabTab('surveys',this)">Surveys</div>
+      <div class="lab-tab" id="lt-pipeline"  onclick="switchLabTab('pipeline',this)">Delivery Pipeline</div>
+      <div class="lab-tab" id="lt-fieldwork" onclick="switchLabTab('fieldwork',this)">Fieldwork</div>
+      <div class="lab-tab" id="lt-weighting" onclick="switchLabTab('weighting',this)">Weighting</div>
+      <div class="lab-tab" id="lt-qa"        onclick="switchLabTab('qa',this)">QA &amp; Translations</div>
+      <div class="lab-tab" id="lt-providers" onclick="switchLabTab('providers',this)">Panel Providers</div>
+      <div class="lab-tab" id="lt-users"     onclick="switchLabTab('users',this)">Users</div>
+      <div class="lab-tab" id="lt-errors"    onclick="switchLabTab('errors',this)">Error Log</div>
+    </div>
+    <div class="scroll">
+      <div id="lab-dashboard"></div>
+      <div id="lab-surveys"   style="display:none"></div>
+      <div id="lab-pipeline"  style="display:none"></div>
+      <div id="lab-fieldwork" style="display:none"></div>
+      <div id="lab-weighting" style="display:none"></div>
+      <div id="lab-qa"        style="display:none"></div>
+      <div id="lab-providers" style="display:none"></div>
+      <div id="lab-users"     style="display:none"></div>
+      <div id="lab-errors"    style="display:none"></div>
+    </div>
+  </div>
+
+  <!-- INSIGHTS JOURNEY -->
+  <div class="page" id="page-journey">
+    <div style="background:#fff;border-bottom:1.5px solid #ebebeb;padding:0 24px;display:flex;align-items:center;gap:0;flex-shrink:0;overflow-x:auto">
+      <div class="lab-tab" id="jt-wizard" onclick="switchJTab('wizard',this)" style="color:#e91e8c;border-bottom-color:#e91e8c">New Study</div>
+      <div class="lab-tab" id="jt-spark"  onclick="switchJTab('spark',this)">Spark</div>
+      <div class="lab-tab" id="jt-collab" onclick="switchJTab('collab',this)">Agent Collaboration</div>
+      <div class="lab-tab" id="jt-map"    onclick="switchJTab('map',this)">Journey Map</div>
+      <div class="lab-tab" id="jt-live"   onclick="switchJTab('live',this)">Live Studies</div>
+    </div>
+    <div class="scroll">
+      <div id="j-wizard"></div>
+      <div id="j-spark"  style="display:none"></div>
+      <div id="j-collab" style="display:none"></div>
+      <div id="j-map"    style="display:none"></div>
+      <div id="j-live"   style="display:none"></div>
+    </div>
+  </div>
+
+  <!-- LIFECYCLE -->
+  <div class="page" id="page-lifecycle">
+    <div class="scroll">
+      <div style="background:#0e0e1a;border-radius:16px;padding:32px 36px;margin-bottom:24px;position:relative;overflow:hidden">
+        <div style="position:absolute;right:0;top:0;width:40%;height:100%;background:radial-gradient(circle at 80% 50%,rgba(233,30,140,0.15),transparent 70%)"></div>
+        <div style="position:relative"><div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.35);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px">Unified Flow</div>
+        <div style="font-size:28px;font-weight:900;color:#e91e8c;line-height:1.2;margin-bottom:14px">The Agentic Lifecycle</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.5);max-width:520px;line-height:1.7">Seven AI agents operating in sequence — from data harmonization through to proactive insight delivery.</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:10px;margin-bottom:20px" id="lc-grid"></div>
+      <div class="card mb">
+        <div class="card-hd"><div><div class="card-title">Connected Loop</div><div class="card-sub">Advisor Agent feeds signals back to restart the cycle</div></div></div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:0" id="lc-loop"></div>
+        <div style="text-align:center;margin-top:12px;font-size:12px;font-weight:700;color:#e91e8c">&#8617; Advisor Agent monitors continuously and triggers new cycles proactively</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+        <div class="card" style="cursor:pointer;border-top:3px solid #e91e8c" onclick="nav('rld')"><div style="font-size:20px;margin-bottom:8px">🔗</div><div class="card-title" style="margin-bottom:5px">RLD Delivery Agent</div><div style="font-size:12px;color:#888;line-height:1.5">Bespoke exports for Publicis, BBC, VISA and more.</div></div>
+        <div class="card" style="cursor:pointer;border-top:3px solid #6c63ff" onclick="nav('agents')"><div style="font-size:20px;margin-bottom:8px">✦</div><div class="card-title" style="margin-bottom:5px">All Agents</div><div style="font-size:12px;color:#888;line-height:1.5">Crosstab, Narrative, Audience, Workflow, Connector.</div></div>
+        <div class="card" style="cursor:pointer;border-top:3px solid #1abc9c" onclick="navLab('dashboard')"><div style="font-size:20px;margin-bottom:8px">🔬</div><div class="card-title" style="margin-bottom:5px">Research Lab</div><div style="font-size:12px;color:#888;line-height:1.5">Surveys, fieldwork, QA, weighting and panels.</div></div>
+        <div class="card" style="cursor:pointer;border-top:3px solid #f7b731" onclick="nav('journey')"><div style="font-size:20px;margin-bottom:8px">⚡</div><div class="card-title" style="margin-bottom:5px">Insights Journey</div><div style="font-size:12px;color:#888;line-height:1.5">Brief in. Seven agents. Validated insight out.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RLD -->
+  <div class="page" id="page-rld">
+    <div class="scroll" id="rld-scroll"><div style="font-size:14px;color:#aaa;text-align:center;padding:40px">Loading RLD Agent...</div></div>
+  </div>
+
+</div>
+
+<!-- SURVEY MODAL -->
+<div class="modal-overlay" id="survey-modal" onclick="if(event.target===this)closeM('survey-modal')">
+  <div class="modal-box" style="width:520px;max-height:80vh">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px"><div style="font-size:15px;font-weight:800;color:#111">Launch New Survey</div><button onclick="closeM('survey-modal')" style="border:none;background:none;font-size:18px;color:#bbb;cursor:pointer">x</button></div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div><label style="font-size:11px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:0.7px;display:block;margin-bottom:5px">Survey Title</label><input class="inp" placeholder="e.g. Gen Z Streaming Habits 2025"/></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div><label style="font-size:11px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:0.7px;display:block;margin-bottom:5px">Category</label><select class="inp"><option>Audience Insights</option><option>Brand Tracking</option><option>Ad Effectiveness</option></select></div>
+        <div><label style="font-size:11px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:0.7px;display:block;margin-bottom:5px">Market</label><select class="inp"><option>Global</option><option>US</option><option>UK</option><option>APAC</option></select></div>
+        <div><label style="font-size:11px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:0.7px;display:block;margin-bottom:5px">Target Responses</label><input class="inp" type="number" placeholder="2000"/></div>
+        <div><label style="font-size:11px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:0.7px;display:block;margin-bottom:5px">Assign Researcher</label><select class="inp"><option>Sara Mitchell</option><option>James Park</option><option>Lena Hoffmann</option></select></div>
+      </div>
+      <div style="background:#fce4f0;border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:10px"><span style="font-size:16px">✦</span><div style="font-size:12.5px;color:#e91e8c;font-weight:600">BriefAI will convert this into a full survey in seconds.</div></div>
+      <div style="display:flex;gap:9px;justify-content:flex-end"><button class="btn" onclick="closeM('survey-modal')">Cancel</button><button class="btn pk" onclick="closeM('survey-modal')">Launch Survey</button></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+// CORE NAVIGATION — defined first, no deps
+// ═══════════════════════════════════════════
+function openM(id) { var m=document.getElementById(id); if(m) m.style.display='flex'; }
+function closeM(id) { var m=document.getElementById(id); if(m) m.style.display='none'; }
+
+function nav(p) {
+  var titles = {home:'Home',audiences:'Audiences',charts:'Charts',explorer:'Data Explorer',dashboards:'Dashboards',agents:'Agents',lab:'Research Lab',journey:'Insights Journey',lifecycle:'Agentic Lifecycle',rld:'RLD Delivery Agent'};
+  var acts = {
+    home:'<button class="btn pk" onclick="nav(\'audiences\')">+ New Audience</button>',
+    audiences:'<button class="btn pk" onclick="newAud()">+ New Audience</button>',
+    charts:'<button class="btn pk">Export</button>',
+    explorer:'<button class="btn pk">Add to Chart</button>',
+    dashboards:'<button class="btn pk">Save Dashboard</button>',
+    agents:'<button class="btn pk">+ New Agent Run</button>',
+    lab:'<button class="btn pk" onclick="openM(\'survey-modal\')">+ New Survey</button>',
+    journey:'<button class="btn pk" onclick="openM(\'survey-modal\')">+ New Study</button>',
+    lifecycle:'<button class="btn pk">Run Lifecycle</button>',
+    rld:'<button class="btn pk">+ New RLD Request</button>'
+  };
+  var pages = document.querySelectorAll('.page');
+  for (var i=0; i<pages.length; i++) pages[i].classList.remove('active');
+  var pg = document.getElementById('page-'+p);
+  if (pg) pg.classList.add('active');
+  var t = document.getElementById('pg-title'); if(t) t.textContent = titles[p]||p;
+  var a = document.getElementById('tb-actions'); if(a) a.innerHTML = acts[p]||'';
+  var nis = document.querySelectorAll('.ni'); for(var i=0;i<nis.length;i++) nis[i].classList.remove('active');
+  var ni = document.getElementById('ni-'+p); if(ni) ni.classList.add('active');
+  if (p==='rld') buildRLD();
+  if (p==='lifecycle') buildLC();
+  if (p==='journey') switchJTab('wizard', document.getElementById('jt-wizard'));
+  if (p==='lab') switchLabTab('dashboard', document.getElementById('lt-dashboard'));
+}
+
+function toggleLabDd(el) {
+  var dd=document.getElementById('lab-dd'), ch=document.getElementById('lab-chev');
+  if (!dd) return;
+  if (dd.style.display==='none') { dd.style.display='block'; ch.style.transform='rotate(180deg)'; navLab('dashboard'); }
+  else { dd.style.display='none'; ch.style.transform=''; }
+}
+
+function navLab(tab) {
+  var pages=document.querySelectorAll('.page'); for(var i=0;i<pages.length;i++) pages[i].classList.remove('active');
+  var pg=document.getElementById('page-lab'); if(pg) pg.classList.add('active');
+  var nis=document.querySelectorAll('.ni'); for(var i=0;i<nis.length;i++) nis[i].classList.remove('active');
+  var ni=document.getElementById('ni-lab'); if(ni) ni.classList.add('active');
+  var labels={dashboard:'Dashboard',surveys:'Surveys',pipeline:'Delivery Pipeline',fieldwork:'Fieldwork',weighting:'Weighting',qa:'QA & Translations',providers:'Panel Providers',users:'Users',errors:'Error Log'};
+  var t=document.getElementById('pg-title'); if(t) t.textContent='Research Lab — '+(labels[tab]||tab);
+  var a=document.getElementById('tb-actions'); if(a) a.innerHTML='<button class="btn pk" onclick="openM(\'survey-modal\')">+ New Survey</button>';
+  var lnis=document.querySelectorAll('.lab-ni'); for(var i=0;i<lnis.length;i++) lnis[i].classList.remove('active');
+  var order=['dashboard','surveys','pipeline','fieldwork','weighting','qa','providers','users','errors'];
+  var idx=order.indexOf(tab); if(idx>=0&&lnis[idx]) lnis[idx].classList.add('active');
+  switchLabTab(tab, document.getElementById('lt-'+tab));
+}
+
+function switchLabTab(tab, el) {
+  var tabs=['dashboard','surveys','pipeline','fieldwork','weighting','qa','providers','users','errors'];
+  for(var i=0;i<tabs.length;i++){
+    var te=document.getElementById('lab-'+tabs[i]); if(te) te.style.display=tabs[i]===tab?'block':'none';
+    var lt=document.getElementById('lt-'+tabs[i]); if(lt){lt.style.color='#aaa';lt.style.borderBottomColor='transparent';}
+  }
+  if(el){el.style.color='#e91e8c';el.style.borderBottomColor='#e91e8c';}
+  if(tab==='dashboard')  buildLabDash();
+  if(tab==='surveys')    buildLabSurveys();
+  if(tab==='pipeline')   buildLabPipeline();
+  if(tab==='fieldwork')  buildLabFieldwork();
+  if(tab==='weighting')  buildLabWeighting();
+  if(tab==='qa')         buildLabQA();
+  if(tab==='providers')  buildLabProviders();
+  if(tab==='users')      buildLabUsers();
+  if(tab==='errors')     buildLabErrors();
+}
+
+function switchJTab(tab, el) {
+  var tabs=['wizard','spark','collab','map','live'];
+  for(var i=0;i<tabs.length;i++){
+    var te=document.getElementById('j-'+tabs[i]); if(te) te.style.display=tabs[i]===tab?'block':'none';
+    var lt=document.getElementById('jt-'+tabs[i]); if(lt){lt.style.color='#aaa';lt.style.borderBottomColor='transparent';}
+  }
+  if(el){el.style.color='#e91e8c';el.style.borderBottomColor='#e91e8c';}
+  if(tab==='wizard') buildJWizard();
+  if(tab==='spark')  buildJSpark();
+  if(tab==='collab') buildJCollab();
+  if(tab==='map')    buildJMap();
+  if(tab==='live')   buildJLive();
+}
+
+// ═══════════════════════════════════════════
+// UTILITIES
+// ═══════════════════════════════════════════
+function mkBars(data, id, fallback) {
+  var c=document.getElementById(id); if(!c) return; c.innerHTML='';
+  for(var i=0;i<data.length;i++){
+    var d=data[i];
+    c.innerHTML+='<div class="hbar"><div class="hbar-lbl">'+d.l+'</div><div class="hbar-track"><div class="hbar-fill" style="width:0%;background:'+(d.c||fallback||'#e91e8c')+'" data-p="'+d.p+'"></div></div><div class="hbar-pct">'+d.p+'%</div></div>';
+  }
+  setTimeout(function(){ var fs=c.querySelectorAll('.hbar-fill'); for(var i=0;i<fs.length;i++) fs[i].style.width=fs[i].dataset.p+'%'; },80);
+}
+
+var INT=[{l:'Technology',p:72,c:'#e91e8c'},{l:'Travel',p:65,c:'#6c63ff'},{l:'Food & Drink',p:58,c:'#f7b731'},{l:'Fashion',p:51,c:'#48cfad'},{l:'Sports',p:44,c:'#ff6b6b'},{l:'Finance',p:38,c:'#a78bfa'}];
+var AGES=[{l:'16-24',p:22,c:'#e91e8c'},{l:'25-34',p:31,c:'#6c63ff'},{l:'35-44',p:25,c:'#48cfad'},{l:'45-54',p:14,c:'#f7b731'},{l:'55-64',p:5,c:'#ff6b6b'},{l:'65+',p:3,c:'#bbb'}];
+
+function badgeClass(s){ return s==='active'?'bg':s==='draft'?'bo':'br'; }
+function idxColor(i){ return i>170?'#e91e8c':i>140?'#6c63ff':'#f7b731'; }
+
+// ═══════════════════════════════════════════
+// HOME — PERSONA
+// ═══════════════════════════════════════════
+var PERSONAS=[
+  {id:'client',    label:'Client / Brand',       icon:'🎯',color:'#e91e8c',bg:'#fce4f0',desc:'I need insights and reports'},
+  {id:'researcher',label:'Researcher / Analyst',  icon:'🔬',color:'#6c63ff',bg:'#ede9ff',desc:'I run studies and analyse data'},
+  {id:'dataops',   label:'Data Ops / Engineer',   icon:'⚙', color:'#f7b731',bg:'#fff4e0',desc:'I manage data delivery'},
+  {id:'account',   label:'Account Director',      icon:'💼',color:'#48cfad',bg:'#e0faf4',desc:'I pitch clients and win business'},
+  {id:'exec',      label:'Executive',             icon:'📈',color:'#a855f7',bg:'#ede9ff',desc:'I need KPIs and strategy'},
+];
+var PCFG={
+  client:    {stats:[['Audiences Built','12','3 new this month','#e91e8c'],['Brand Index','142','vs internet avg 100','#6c63ff'],['Reach','2.4B','global','#1abc9c'],['Reports','8','2 pending','#f7b731']],actions:[{i:'🔍',t:'Explore Audience Data',d:'Search 250K+ data points',n:'explorer',c:'#e91e8c'},{i:'📊',t:'My Dashboards',d:'Live brand trackers',n:'dashboards',c:'#6c63ff'},{i:'✦',t:'Insights Journey',d:'Brief to insight in minutes',n:'journey',c:'#f7b731'},{i:'📋',t:'Reports',d:'Download insight reports',n:'home',c:'#48cfad'}]},
+  researcher:{stats:[['Live Surveys','4','2 launching this week','#e91e8c'],['In Fieldwork','5','across 4 providers','#6c63ff'],['Responses','28.4K','12% this month','#1abc9c'],['QA Alerts','3','needs attention','#f7b731']],actions:[{i:'📋',t:'Launch New Survey',d:'AI builds questions instantly',n:'lab',c:'#6c63ff'},{i:'📡',t:'Monitor Fieldwork',d:'Live quota tracking',n:'lab',c:'#e91e8c'},{i:'⚖',t:'Run Weighting',d:'Tonnage with AI sense-check',n:'lab',c:'#f7b731'},{i:'✅',t:'QA & Translations',d:'AI-powered checking',n:'lab',c:'#1abc9c'}]},
+  dataops:   {stats:[['Active Deliveries','23','7 due this quarter','#f7b731'],['Overdue','2','immediate action needed','#ff5c7c'],['Clients','8','Publicis, BBC, VISA...','#6c63ff'],['Channels','3','GCS, Snowflake, Platform','#1abc9c']],actions:[{i:'🔗',t:'RLD Delivery Agent',d:'Bespoke exports for key clients',n:'rld',c:'#f7b731'},{i:'🚀',t:'Delivery Pipeline',d:'Kanban of all projects',n:'lab',c:'#e91e8c'},{i:'⚙',t:'Weighting & Tonnage',d:'AI audience code mapping',n:'lab',c:'#6c63ff'},{i:'🔴',t:'Error Log',d:'AI-suggested fixes',n:'lab',c:'#ff6b6b'}]},
+  account:   {stats:[['Active Accounts','12','3 new proposals','#48cfad'],['Won Q1','£420K','14% vs Q4','#1abc9c'],['Pitches Lost','25%','budget & timelines','#ff5c7c'],['Pending RFPs','4','due this month','#f7b731']],actions:[{i:'✦',t:'Build Client Pitch',d:'AI slides, charts, narratives',n:'journey',c:'#48cfad'},{i:'🎯',t:'Audience Builder',d:'Bespoke segments for pitching',n:'audiences',c:'#e91e8c'},{i:'📊',t:'Charts & Analysis',d:'Benchmarked against GWI data',n:'charts',c:'#6c63ff'},{i:'📂',t:'Presentations',d:'Canvas and PPT exports',n:'dashboards',c:'#f7b731'}]},
+  exec:      {stats:[['Platform Users','142','across 28 clients','#a855f7'],['Revenue Q1','£2.1M','8% vs forecast','#1abc9c'],['AI Adoption','78%','of delivery automated','#e91e8c'],['Time Saved','90%','vs manual workflows','#f7b731']],actions:[{i:'📈',t:'Platform KPIs',d:'Usage and revenue performance',n:'dashboards',c:'#a855f7'},{i:'🤖',t:'Agentic Lifecycle',d:'Seven agents adoption metrics',n:'lifecycle',c:'#e91e8c'},{i:'🔬',t:'Research Pipeline',d:'Active studies across clients',n:'lab',c:'#6c63ff'},{i:'💡',t:'Strategic Insights',d:'AI-delivered trend alerts',n:'agents',c:'#1abc9c'}]}
+};
+
+function buildPersonaChips(){
+  var wrap=document.getElementById('persona-chips'); if(!wrap||wrap.hasChildNodes()) return;
+  for(var i=0;i<PERSONAS.length;i++){
+    var p=PERSONAS[i];
+    var d=document.createElement('div');
+    d.setAttribute('data-pid',p.id);
+    d.style.cssText='background:#fff;border-radius:12px;border:1.5px solid #ebebeb;padding:14px;cursor:pointer;text-align:center;transition:all 0.15s';
+    d.innerHTML='<div style="font-size:24px;margin-bottom:7px">'+p.icon+'</div><div style="font-size:12.5px;font-weight:800;color:#111;margin-bottom:3px">'+p.label+'</div><div style="font-size:11px;color:#aaa">'+p.desc+'</div>';
+    d.onclick=function(pid,col,bg){return function(){selectPersona(pid,col,bg);};}(p.id,p.color,p.bg);
+    wrap.appendChild(d);
+  }
+}
+
+function selectPersona(pid,col,bg){
+  var chips=document.querySelectorAll('[data-pid]');
+  for(var i=0;i<chips.length;i++){chips[i].style.borderColor='#ebebeb';chips[i].style.background='#fff';}
+  var chip=document.querySelector('[data-pid="'+pid+'"]');
+  if(chip){chip.style.borderColor=col;chip.style.background=bg;}
+  buildPersonaView(pid);
+}
+
+function buildPersonaView(pid){
+  var cfg=PCFG[pid]; if(!cfg) return;
+  var p=PERSONAS.filter(function(x){return x.id===pid;})[0];
+  var pc=document.getElementById('persona-content');
+  var html='<div style="background:linear-gradient(120deg,#1a1a2e,#2d1a40);border-radius:14px;padding:22px 28px;margin-bottom:18px;position:relative;overflow:hidden">'
+    +'<div style="position:absolute;right:-30px;top:-30px;width:160px;height:160px;border-radius:50%;background:'+p.color+'18"></div>'
+    +'<div style="position:relative"><div style="font-size:20px;font-weight:900;color:#fff;margin-bottom:5px">'+p.icon+' '+p.label+' Dashboard</div>'
+    +'<button onclick="resetPersona()" style="margin-top:10px;padding:5px 13px;border-radius:7px;background:rgba(255,255,255,0.1);color:#fff;border:1.5px solid rgba(255,255,255,0.2);font-size:12px;font-weight:600;cursor:pointer">Switch role</button></div></div>';
+  html+='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px">';
+  for(var i=0;i<cfg.stats.length;i++){var s=cfg.stats[i];html+='<div class="stat" style="border-top:3px solid '+s[3]+'"><div class="stat-lbl">'+s[0]+'</div><div class="stat-val">'+s[1]+'</div><div class="stat-ch">'+s[2]+'</div></div>';}
+  html+='</div><div style="font-size:11px;font-weight:700;color:#bbb;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:12px">Your Workspace</div>';
+  html+='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px">';
+  for(var i=0;i<cfg.actions.length;i++){
+    var a=cfg.actions[i];
+    html+='<div onclick="nav(\''+a.n+'\')" style="background:#fff;border-radius:12px;border:1.5px solid #ebebeb;border-top:3px solid '+a.c+';padding:16px;cursor:pointer">'
+      +'<div style="font-size:22px;margin-bottom:9px">'+a.i+'</div>'
+      +'<div style="font-size:13px;font-weight:800;color:#111;margin-bottom:4px">'+a.t+'</div>'
+      +'<div style="font-size:11.5px;color:#aaa;line-height:1.5">'+a.d+'</div></div>';
+  }
+  html+='</div>';
+  html+='<div class="card" style="background:#0e0e1a;border:none;cursor:pointer" onclick="nav(\'journey\')">'
+    +'<div style="display:flex;align-items:center;gap:16px">'
+    +'<div style="flex:1"><div style="font-size:15px;font-weight:900;color:#e91e8c;margin-bottom:5px">Insights Journey</div>'
+    +'<div style="font-size:12.5px;color:rgba(255,255,255,0.45);line-height:1.6">Client brief in. Seven AI agents. Validated insight out.</div></div>'
+    +'<div style="display:flex;gap:8px;flex-shrink:0">'
+    +'<div style="background:rgba(233,30,140,0.2);border:1px solid rgba(233,30,140,0.3);border-radius:10px;padding:10px 14px;text-align:center"><div style="font-size:16px;font-weight:900;color:#ff80c0">Brief</div><div style="font-size:10px;color:rgba(255,255,255,0.4);margin-top:2px">Input</div></div>'
+    +'<div style="color:rgba(255,255,255,0.2);font-size:18px;display:flex;align-items:center">></div>'
+    +'<div style="background:rgba(108,99,255,0.2);border:1px solid rgba(108,99,255,0.3);border-radius:10px;padding:10px 14px;text-align:center"><div style="font-size:16px;font-weight:900;color:#a78bfa">7 AI</div><div style="font-size:10px;color:rgba(255,255,255,0.4);margin-top:2px">Agents</div></div>'
+    +'<div style="color:rgba(255,255,255,0.2);font-size:18px;display:flex;align-items:center">></div>'
+    +'<div style="background:rgba(26,188,156,0.2);border:1px solid rgba(26,188,156,0.3);border-radius:10px;padding:10px 14px;text-align:center"><div style="font-size:16px;font-weight:900;color:#1abc9c">Insight</div><div style="font-size:10px;color:rgba(255,255,255,0.4);margin-top:2px">Output</div></div>'
+    +'</div></div></div>';
+  pc.innerHTML=html;
+}
+
+function resetPersona(){
+  var chips=document.querySelectorAll('[data-pid]');
+  for(var i=0;i<chips.length;i++){chips[i].style.borderColor='#ebebeb';chips[i].style.background='#fff';}
+  var pc=document.getElementById('persona-content');
+  pc.innerHTML='<div class="stats-row"><div class="stat"><div class="stat-lbl">Total Reach</div><div class="stat-val">2.4B</div><div class="stat-ch">8.3% this quarter</div></div><div class="stat"><div class="stat-lbl">Saved Audiences</div><div class="stat-val">12</div><div class="stat-ch">3 new this month</div></div><div class="stat"><div class="stat-lbl">Live Surveys</div><div class="stat-val">4</div><div class="stat-ch">2 this week</div></div><div class="stat"><div class="stat-lbl">Active Projects</div><div class="stat-val">14</div><div class="stat-ch">5 in fieldwork</div></div></div><div class="card mb" style="padding:20px;text-align:center;color:#aaa">Select a role above to personalise your dashboard.</div>';
+}
+
+// ═══════════════════════════════════════════
+// HOME TABLE + AUDIENCE LIST
+// ═══════════════════════════════════════════
+var AUDS=[{n:'Tech-Savvy Millennials',r:'180M',reg:'Global',s:'active',idx:142},{n:'Luxury Shoppers 35-54',r:'42M',reg:'US & UK',s:'active',idx:189},{n:'Gen Z Gamers',r:'95M',reg:'APAC',s:'draft',idx:167},{n:'Health & Wellness',r:'220M',reg:'Global',s:'active',idx:128},{n:'Biz Decision Makers',r:'58M',reg:'EMEA',s:'archived',idx:155}];
+var selIdx=0;
+function buildHomeTbl(){
+  var tb=document.getElementById('home-tbl'); if(!tb) return;
+  for(var i=0;i<AUDS.length;i++){var a=AUDS[i];tb.innerHTML+='<tr><td><strong style="color:#111">'+a.n+'</strong></td><td style="font-weight:700">'+a.r+'</td><td style="color:#999">'+a.reg+'</td><td><span class="badge '+badgeClass(a.s)+'">'+a.s[0].toUpperCase()+a.s.slice(1)+'</span></td><td><strong style="color:'+idxColor(a.idx)+'">'+a.idx+'</strong></td></tr>';}
+}
+function renderAudList(f){
+  var c=document.getElementById('aud-list-c'); if(!c) return; c.innerHTML='';
+  for(var i=0;i<AUDS.length;i++){
+    var a=AUDS[i]; if(f&&a.n.toLowerCase().indexOf(f.toLowerCase())<0) continue;
+    c.innerHTML+='<div class="acard'+(i===selIdx?' sel':'')+'" onclick="selAud('+i+')">'
+      +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">'
+      +'<div style="font-size:13px;font-weight:700;color:'+(i===selIdx?'#e91e8c':'#111')+'">'+a.n+'</div>'
+      +'<span class="badge '+badgeClass(a.s)+'">'+a.s[0].toUpperCase()+a.s.slice(1)+'</span></div>'
+      +'<div style="font-size:11.5px;color:#aaa">'+a.r+' reach</div></div>';
+  }
+}
+function selAud(i){selIdx=i;renderAudList();var an=document.getElementById('aud-name');if(an)an.value=AUDS[i].n;var rp=document.getElementById('rp');if(rp)rp.textContent=AUDS[i].r+' reach';var rn=document.getElementById('reach-num');if(rn)rn.textContent=AUDS[i].r;}
+function filterAuds(v){renderAudList(v);}
+function newAud(){AUDS.unshift({n:'New Audience',r:'0M',reg:'Global',s:'draft',idx:100});selIdx=0;renderAudList();var an=document.getElementById('aud-name');if(an){an.value='New Audience';an.focus();}}
+function updateReach(){var n=document.querySelectorAll('.chkbox.on').length;var v=Math.min(50+n*22,350);var rn=document.getElementById('reach-num');if(rn)rn.textContent=v+'M';var rb=document.getElementById('reach-bar');if(rb)rb.style.width=Math.min(100,v/3.5)+'%';}
+
+// ═══════════════════════════════════════════
+// CHARTS
+// ═══════════════════════════════════════════
+var CD=[{l:'Technology',p:72,c:'#e91e8c'},{l:'Travel',p:65,c:'#6c63ff'},{l:'Food & Drink',p:58,c:'#f7b731'},{l:'Gaming',p:55,c:'#48cfad'},{l:'Sports',p:44,c:'#ff6b6b'},{l:'Fashion',p:42,c:'#a78bfa'}];
+function buildBarChart(){
+  var W=520,H=240,pl=50,pr=20,pt=20,pb=36,iW=W-pl-pr,iH=H-pt-pb,maxP=80,bW=iW/CD.length*0.6,gap=iW/CD.length;
+  var s='<svg class="chart-svg" viewBox="0 0 '+W+' '+H+'" style="width:100%">';
+  var gv=[0,20,40,60,80];
+  for(var gi=0;gi<gv.length;gi++){var v=gv[gi],y=pt+iH-(v/maxP)*iH;s+='<line class="grid-line" x1="'+pl+'" y1="'+y+'" x2="'+(W-pr)+'" y2="'+y+'"/><text class="axis-label" x="'+(pl-8)+'" y="'+(y+4)+'" text-anchor="end">'+v+'%</text>';}
+  for(var ci=0;ci<CD.length;ci++){var d=CD[ci],x=pl+ci*gap+(gap-bW)/2,bH=(d.p/maxP)*iH,by=pt+iH-bH;s+='<rect class="bar-rect" x="'+x+'" y="'+by+'" width="'+bW+'" height="'+bH+'" rx="4" fill="'+d.c+'" onmouseover="showTip(event,\''+d.l+': '+d.p+'%\')" onmouseout="hideTip()"/><text class="axis-label" x="'+(x+bW/2)+'" y="'+(H-pb+14)+'" text-anchor="middle" font-size="11">'+d.l.split(' ')[0]+'</text>';}
+  s+='</svg>'; document.getElementById('bar-wrap').innerHTML=s;
+}
+function showTip(e,txt){var t=document.getElementById('tooltip');if(!t)return;t.style.display='block';t.textContent=txt;t.style.left=(e.offsetX+12)+'px';t.style.top=(e.offsetY-10)+'px';}
+function hideTip(){var t=document.getElementById('tooltip');if(t)t.style.display='none';}
+function setChart(type,btn){
+  var btns=document.querySelectorAll('.ctb');
